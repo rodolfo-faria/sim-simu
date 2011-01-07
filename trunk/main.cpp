@@ -20,10 +20,11 @@ int main()
 	ofstream file;
 	file.open("output.dat");
 
+	double mean = 0;
 	int quanta = 5;
 	int mat[ N ];
 	srand( (unsigned) time( 0 ) );
-	int cycle = 100*N;
+	int cycle = 10000*N;
 
 	//set all the object's energy to 5 quanta
 	for(int i = 0; i < N; i++)
@@ -35,20 +36,20 @@ int main()
 		int object_1 = int( N*rand() )/RAND_MAX;
 		int object_2 = int( N*rand() )/RAND_MAX;
 
+		int random = int ( rand() )/RAND_MAX;
+		
 		//exchange one quanta between them
 		mat[ object_1 ] += 1;
 		mat[ object_2 ] -= 1;
 		
-		//check if some object have negative quanta
-		if( ( (mat[ object_1 ] < 0) || (mat[ object_2 ] < 0) ) || ( (mat[ object_2 ] < 0) || (mat[ object_1 ] < 0) ) || ( (mat[ object_2 ] < 0) && (mat[ object_1 ] < 0) ) )
+		//check if some object has negative quanta
+		if( ( (mat[ object_1 ] < 0) || (mat[ object_2 ] < 0) ) || ( (mat[ object_2 ] < 0) && (mat[ object_1 ] < 0) ) )
 		{
 			mat[ object_1 ] -= 1;
 			mat[ object_2 ] += 1;
 
-			//k -= 1; //Do I have to re-count?
-		}
-				
-		//file << "macrostate " << k << ": " << setw( 2 ) << mat[ k ]
+			k -= 1; 
+		}			
 	}
 	
 	file << "Element" << setw( 13 ) << "Value" << endl;
