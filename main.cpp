@@ -20,7 +20,6 @@ int main()
 	ofstream file;
 	file.open("output.dat");
 
-	double mean = 0;
 	int quanta = 5;
 	int mat[ N ];
 	srand( (unsigned) time( 0 ) );
@@ -35,8 +34,6 @@ int main()
 		//pick up two objects randomly
 		int object_1 = int( N*rand() )/RAND_MAX;
 		int object_2 = int( N*rand() )/RAND_MAX;
-
-		int random = int ( rand() )/RAND_MAX;
 		
 		//exchange one quanta between them
 		mat[ object_1 ] += 1;
