@@ -3,7 +3,6 @@ This code simulates elastic energy changes for a group of at least 1000 objects.
 It uses the Microcanonical Ensemble (NVE)
 */
 
-
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
@@ -59,8 +58,19 @@ int main()
 		total_energy += mat [ j ];
 	}
 	cout << total_energy << endl;
-		
 
+	//compute the frequency in which each energy appears in the final macrostate till 35 quanta
+	for(int i = 0; i < 35; i++)
+	{
+		int frequency = 0;
+		for(int j = 0; j < N; j++)
+			{
+				if(mat[ j ] == i)
+					++frequency;
+			}
+		cout << "number of " << i << "'s : " << frequency << endl;	
+	}
+	
 	return 0;
 }
 
