@@ -11,74 +11,129 @@
 
 using namespace std;
 
-#define maxCycle 100000
+#define experiments 100 //Number of experiments
+#define maxCycle 100000 // Maximum Monte Carlo Cycle
 
 int main()
 {
 	//input data:
-	double Temperature = 4; //has dimension of energy
+	double Temperature = 4; //Has dimension of energy
 	double initial_v = 0;
 	double delta_v = 4;
-	double Beta = 1000;
-
-	double max_v = 10.*sqrt(Temperature);
-	double interval_v = max_v/100;
 
 	double v_new, v_change;
 	double delta_E;
 
 	srand( (unsigned) time(0) );
 
-	//histogram vector
+
+	//Define bath temperature and velocity interval
+	double max_v = 10.*sqrt(Temperature);
+	double interval_v = max_v/100;
+
+	//Histogram vector
 	double P[ maxCycle ];
 	
+	//Initialize values and their respective matrices
 	double mean_v = 0;
+	double Mean_v[experiments];
 	double mean_energy = 0;
+	double Mean_energy[experiments];
 	double sqr_mean_energy = 0;
-	int accept_step = 0;
-	int accept_step_else = 0;
-	double v_old = initial_v;
-	for(int mcCycle = 0; mcCycle < maxCycle; mcCycle++)
+	double Sqr_mean_energy[experiments];
+	double sqr_mean_v = 0;
+	double Sqr_mean_v[experiments];
+	
+	//Acceptance-step variables
+	int accept_step;
+	int accept_step_else;
+	int not_accept;
+
+	for(int i = 0; i < experiments; i++)
 	{
-		v_change = ( 2 * double( rand() ) / RAND_MAX - 1 ) * delta_v;
-		v_new = v_old + v_change;
+		double v_old = initial_v;
+		accept_step = 0;
+		accept_step_else = 0;
+		not_accept = 0;
+		mean_v = 0;
+		mean_energy = 0;
+		v_new = 0;
 
-		delta_E = 0.5*(v_new*v_new - v_old*v_old);
-		//cout << delta_E << endl;
-		
-		if(delta_E <= 0)
+		for(int mcCycle = 0; mcCycle < maxCycle; mcCycle++)
 		{
-			accept_step++;
-			v_old = v_new;
-		}
-		else if( (double(rand())/RAND_MAX) <= exp(-delta_E/Temperature) )
-		{
-			accept_step_else++;
-			v_old = v_new;
-		}
+			//Sort a velocity in the range (-delta_v, +delta_v)
+			v_change = ( 2 * double( rand() ) / RAND_MAX - 1 ) * delta_v;
+			v_new = v_old + v_change;
+
+			//Compute energy change
+			delta_E = 0.5*(v_new*v_new - v_old*v_old);
 		
-		//Store the new velocities
-		P[ mcCycle ] = v_new;
-
-		mean_v += v_new;
-		mean_energy += 0.5*v_new*v_new;
-		sqr_mean_energy += (0.5*v_new*v_new)*(0.5*v_new*v_new);
-
+			//Metropolis acceptance conditions
+			if(delta_E <= 0)
+			{
+				accept_step++;
+				v_old = v_new;
+			}
+			else if( (double(rand())/RAND_MAX) <= exp(-delta_E/Temperature) )
+			{
+				accept_step_else++;
+				v_old = v_new;
+			}
+			//keep the old configuration
+			else 
+			{
+				v_new = v_old; 
+				not_accept++;
+			}
+			
+			//Store the new velocities
+			P[ mcCycle ] = v_new;
+	
+			//Accumulate mean velocity and mean energy
+			mean_v += v_new;
+			sqr_mean_v += v_new*v_new;
+			mean_energy += 0.5*v_new*v_new;
+			sqr_mean_energy += (0.5*v_new*v_new)*(0.5*v_new*v_new);
+	
+		}
+		//Get the mean value for the i experiment
+		mean_v /= maxCycle;
+		sqr_mean_v /= maxCycle;
+		mean_energy /= maxCycle;
+		sqr_mean_energy /= maxCycle;
+		
+		//Store the mean in its matrix
+		Mean_v[ i ] = mean_v;
+		Sqr_mean_v[ i ] = sqr_mean_v;
+		Mean_energy[ i ] = mean_energy;
+		Sqr_mean_energy[ i ] = sqr_mean_energy;
 	}
 	
-	mean_v /= maxCycle;
-	mean_energy /= maxCycle;
-	sqr_mean_energy /= maxCycle;
-	double variance = sqr_mean_energy - mean_energy*mean_energy;
-	//double result = 0.5*v_new*v_new;
-	cout << "mean_energy = " << mean_energy << endl;
-	cout << "variance = " << variance << endl;
-	cout << "mean_v = " << mean_v << endl;
+	//Calculate the mean through the experiments
+	for(int i = 0; i < experiments; i++)
+	{
+		mean_v += Mean_v[ i ];
+		sqr_mean_v += Sqr_mean_v[ i ];
+		mean_energy += Mean_energy[ i ];
+		sqr_mean_energy += Sqr_mean_energy[ i ];
+	}
+	mean_v /= experiments;
+	sqr_mean_v /= experiments;
+	mean_energy /= experiments;
+	sqr_mean_energy /= experiments;
 
-	//int Number[];
-	
-	//An attempt to make an histogram
-	for(int j = 0; j < 5*max_v; j++)
+	//Compute variances and print relevant values	
+	double energy_variance = sqr_mean_energy - mean_energy*mean_energy;
+	double mean_v_variance = sqr_mean_v - mean_v*mean_v;
+	cout << "Temperature = " << Temperature << endl;
+	cout << "mean_energy = " << mean_energy << endl;
+	cout << "energy variance = " << energy_variance << endl;
+	cout << "mean_v = " << mean_v << endl;
+	cout << "velocity variance = " << mean_v_variance << endl;
+	cout << "---------------------------------------------------" << endl;
+
+	//Generate histogram till n*max_v
+	for(int j = 0; j < 2*max_v; j++)
 	{	
 		int frequency = 0;
 		for(int i = 0; i < maxCycle; i++)
@@ -86,13 +141,15 @@ int main()
 			if( ( ( abs(P[ i ]) ) > j*interval_v ) && ( ( abs(P[ i ]) ) < (j + 1)*interval_v ) )
 				++frequency;
 		}
-		//cout << "numbers of velocities in the " << j + 1 << " interval: " << frequency << endl;
+		cout << "numbers of velocities in the " << j + 1 << " interval: " << frequency << endl;
 	}
-
-			
-	cout << accept_step << endl;
-	cout << accept_step_else << endl;
 	
+	//Calculate accepted and not accepted steps in metropolis scheme
+	cout << "\nAccepted 'if' step = " << accept_step << endl;
+	cout << "Accepted 'if else' step = " << accept_step_else << endl;
+	cout << "Total accepted step = " << accept_step + accept_step_else << endl;
+	cout << "Not accepted-step = " << not_accept << endl;
+
 	return 0;
 }
 		
