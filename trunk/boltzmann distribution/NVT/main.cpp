@@ -11,15 +11,15 @@
 
 using namespace std;
 
+#define maxCycle 1000
+
 int main()
 {
 	//input data:
 	double Temperature = 4; //has dimension of energy
-	int maxCycle = 1000;
-	double initial_v = 3;
+	double initial_v = 0;
 	double delta_v = 4;
-	double large = pow(10.,-23.);
-	double Beta = 1 / ( (1.38065)*large*Temperature );
+	double Beta = 1000;
 
 	double max_v = 10.*sqrt(Temperature);
 	double interval_v = max_v/500;
@@ -29,7 +29,11 @@ int main()
 
 	srand( (unsigned) time(0) );
 
+	//histogram vector
+	double P[ maxCycle ];
+
 	int accept_step = 0;
+	int accept_step_else = 0;
 	double v_old = initial_v;
 	for(int mcCycle = 0; mcCycle < maxCycle; mcCycle++)
 	{
@@ -37,20 +41,40 @@ int main()
 		v_new = v_old + v_change;
 
 		delta_E = 0.5*(v_new*v_new - v_old*v_old);
-		cout << v_change << endl;
 		
 		if(delta_E <= 0)
 		{
 			accept_step++;
 			v_old = v_new;
 		}
-		else if( (double(rand())/RAND_MAX) <= exp(-Beta*delta_E) )
+		else if( (double(rand())/RAND_MAX) <= 0.5 )
 		{
-			accept_step++;
+			accept_step_else++;
 			v_old = v_new;
 		}
+		
+		//Store the new velocities
+		P[ mcCycle ] = v_new;
+
 	}
+
+	//int Number[];
+	
+	//An attempt to make an histogram
+	for(int j = 0; j < 5*max_v; j++)
+	{	
+		int frequency = 0;
+		for(int i = 0; i < maxCycle; i++)
+		{
+			if( ( ( abs(P[ i ]) ) > j*interval_v ) && ( ( abs(P[ i ]) ) < (j + 1)*interval_v ) )
+				++frequency;
+		}
+		cout << "numbers of velocities in the " << j + 1 << " interval: " << frequency << endl;
+	}
+
+			
 	cout << accept_step << endl;
+	cout << accept_step_else << endl;
 	
 	return 0;
 }
