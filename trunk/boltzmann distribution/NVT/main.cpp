@@ -133,6 +133,7 @@ int main()
 	cout << "---------------------------------------------------" << endl;
 
 	//Generate histogram till n*max_v
+	//Later, allocate memory to create a density vector
 	int i, j;
 	int n = 2;
 	for(j = 0; j < n*max_v; j++)
