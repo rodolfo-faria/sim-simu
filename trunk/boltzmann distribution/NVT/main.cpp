@@ -11,12 +11,12 @@
 
 using namespace std;
 
-#define experiments 100 //Number of experiments
-#define maxCycle 100000 // Maximum Monte Carlo Cycle
-
 int main()
 {
 	//input data:
+	const int experiments = 100; //Number of experiments
+	const int maxCycle = 100000; //Maximum Monte Carlo Cycle
+	
 	double Temperature = 4; //Has dimension of energy
 	double initial_v = 0;
 	double delta_v = 4;
@@ -34,7 +34,7 @@ int main()
 	//Histogram vector
 	double P[ maxCycle ];
 	
-	//Initialize values and their respective matrices
+	//Initialize values and their respective vectors
 	double mean_v = 0;
 	double Mean_v[experiments];
 	double mean_energy = 0;
@@ -102,7 +102,7 @@ int main()
 		mean_energy /= maxCycle;
 		sqr_mean_energy /= maxCycle;
 		
-		//Store the mean in its matrix
+		//Store the mean in its vector
 		Mean_v[ i ] = mean_v;
 		Sqr_mean_v[ i ] = sqr_mean_v;
 		Mean_energy[ i ] = mean_energy;
@@ -133,10 +133,12 @@ int main()
 	cout << "---------------------------------------------------" << endl;
 
 	//Generate histogram till n*max_v
-	for(int j = 0; j < 2*max_v; j++)
+	int i, j;
+	int n = 2;
+	for(j = 0; j < n*max_v; j++)
 	{	
 		int frequency = 0;
-		for(int i = 0; i < maxCycle; i++)
+		for(i = 0; i < maxCycle; i++)
 		{
 			if( ( ( abs(P[ i ]) ) > j*interval_v ) && ( ( abs(P[ i ]) ) < (j + 1)*interval_v ) )
 				++frequency;
