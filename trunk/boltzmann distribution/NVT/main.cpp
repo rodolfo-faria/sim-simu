@@ -147,7 +147,7 @@ int main()
 		cout << "numbers of velocities in the " << j + 1 << " interval: " << frequency << endl;
 	}
 	
-	//Calculate accepted and not accepted steps in metropolis scheme
+	//Print accepted and not accepted steps in metropolis scheme
 	cout << "\nAccepted 'if' step = " << accept_step << endl;
 	cout << "Accepted 'if else' step = " << accept_step_else << endl;
 	cout << "Total accepted step = " << accept_step + accept_step_else << endl;
