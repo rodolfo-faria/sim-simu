@@ -14,6 +14,7 @@ using namespace std;
 
 int main()
 {
+	//Creat output file
 	ofstream file;
 	file.open("histogram.dat");
 
@@ -22,20 +23,23 @@ int main()
 	int quanta = 5;
 	int quanta_1 = 7;
 	int quanta_2 = 3;
-	int mat[ N ];
+
+	int mat[ N ]; //vector which contains the energy of each object
+	int maxCycle = 100*N; //maximum number of cycles
+
 	srand( (unsigned) time( 0 ) );
-	int cycle = 100*N;
 
 	//set all the object's energy to 5 quanta
 	//for(int i = 0; i < N; i++)
 	//	mat[ i ] = quanta;
-	//Another initial condition
+
+	//Another energy distribution initial condition
 	for(int i = 0; i < N/2; i++)
 		mat[ i ] = quanta_1;
 	for(int i = N/2; i < N; i++)
 		mat[ i ] = quanta_2;
 
-	for(int k = 0; k < cycle; k++)
+	for(int k = 0; k < maxCycle; k++)
 	{
 		//pick up two objects randomly
 		int object_1 = int( N*rand() )/RAND_MAX;
@@ -50,7 +54,8 @@ int main()
 		{
 			mat[ object_1 ] -= 1;
 			mat[ object_2 ] += 1;
-
+			
+			//Keep previous configuration
 			k -= 1; 
 		}
 	}
