@@ -14,8 +14,8 @@ using namespace std;
 int main()
 {
 	//input data:
-	const int experiments = 100; //Number of experiments
-	const int maxCycle = 100000; //Maximum Monte Carlo Cycle
+	const int experiments = 10000; //Number of experiments
+	const int maxCycle = 20000; //Maximum Monte Carlo Cycle
 	
 	double Temperature = 4; //Has dimension of energy
 	double initial_v = 0;
@@ -23,9 +23,6 @@ int main()
 
 	double v_new, v_change;
 	double delta_E;
-
-	srand( (unsigned) time(0) );
-
 
 	//Define bath temperature and velocity interval
 	double max_v = 10.*sqrt(Temperature);
@@ -58,6 +55,9 @@ int main()
 		mean_v = 0;
 		mean_energy = 0;
 		v_new = 0;
+		
+		//Change the seed for each experiment
+		srand( (unsigned) time(0) );
 
 		for(int mcCycle = 0; mcCycle < maxCycle; mcCycle++)
 		{
@@ -79,7 +79,7 @@ int main()
 				accept_step_else++;
 				v_old = v_new;
 			}
-			//keep the old configuration
+			//Otherwise, keep the old configuration
 			else 
 			{
 				v_new = v_old; 
@@ -144,7 +144,7 @@ int main()
 			if( ( ( abs(P[ i ]) ) > j*interval_v ) && ( ( abs(P[ i ]) ) < (j + 1)*interval_v ) )
 				++frequency;
 		}
-		cout << "numbers of velocities in the " << j + 1 << " interval: " << frequency << endl;
+		cout << "numbers of velocities in the " << (j + 1)*interval_v << " interval: " << frequency << endl;
 	}
 	
 	//Print accepted and not accepted steps in metropolis scheme
@@ -157,3 +157,4 @@ int main()
 }
 		
 
+		
