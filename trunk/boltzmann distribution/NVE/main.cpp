@@ -15,8 +15,9 @@ using namespace std;
 int main()
 {
 	//Creat output file
-	ofstream file;
+	ofstream file, afile;
 	file.open("histogram.dat");
+	afile.open("convergence.dat");
 
 	const int N = 1000; //number of objects
 	const int max_quanta = 35;
@@ -27,18 +28,20 @@ int main()
 	int mat[ N ]; //vector which contains the energy of each object
 	int maxCycle = 100*N; //maximum number of cycles
 
-	srand( (unsigned) time( 0 ) );
-
 	//set all the object's energy to 5 quanta
-	//for(int i = 0; i < N; i++)
-	//	mat[ i ] = quanta;
+	for(int i = 0; i < N; i++)
+		mat[ i ] = quanta;
 
 	//Another energy distribution initial condition
-	for(int i = 0; i < N/2; i++)
+	/*for(int i = 0; i < N/2; i++)
 		mat[ i ] = quanta_1;
 	for(int i = N/2; i < N; i++)
-		mat[ i ] = quanta_2;
+		mat[ i ] = quanta_2;*/
 
+	srand( (unsigned) time( 0 ) );
+	
+	//acceptance index
+	int accepted = 0;
 	for(int k = 0; k < maxCycle; k++)
 	{
 		//pick up two objects randomly
@@ -52,21 +55,33 @@ int main()
 		//check if some object has negative quanta
 		if( ( (mat[ object_1 ] < 0) || (mat[ object_2 ] < 0) ) || ( (mat[ object_2 ] < 0) && (mat[ object_1 ] < 0) ) )
 		{
+			accepted++;
+
+			//Keep previous configuration
 			mat[ object_1 ] -= 1;
 			mat[ object_2 ] += 1;
 			
-			//Keep previous configuration
+			//discount in order to count only effective energies exchanges
 			k -= 1; 
 		}
+
+		//Verify convergence of the ground state population
+		int count = 0;
+		for(int i = 0; i < N; i++)
+		{
+			if(mat[ i ] == 0)
+				++count;
+		}
+		afile << k << setw(13) << count << endl;
 	}
 	
-	file << "Quanta" << setw( 13 ) << "Frequency" << endl;
-
-	//output the final macrostate and verify the conservation of the total energy of the system:
-	int total_energy = 0;
-	for(int j = 0; j < N; j++)
+	//Verify the conservation of the total energy of the system:
+	double total_energy = 0;
+	for(int j = 0; j < N; j++) {
 		total_energy += mat [ j ];
-	cout << total_energy << endl;
+	}
+
+	file << "Quanta" << setw( 13 ) << "Frequency" << endl;
 
 	//compute the frequency in which each energy appears in the final macrostate till max_quanta
 	double density[ max_quanta ];
@@ -78,10 +93,13 @@ int main()
 				if(mat[ j ] == i)
 					++frequency;
 			}
-		density[ i ] = double(frequency)/N;
+		density[ i ] = double(frequency)/double(N);
 		file << i + 1 << setw(13) << frequency << endl;
-		cout << "number of " << i + 1 << "'s : " << frequency << endl;	
+		cout << "number of " << i + 1 << " quantas's energy: " << frequency << endl;	
 	}
+
+	cout << "total energy is = " << total_energy << endl;
+	cout << "dicounted steps (in porcentage) = " << 100*(double(accepted)/double(maxCycle)) << "%" << endl;
 	
 	return 0;
 }
