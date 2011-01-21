@@ -24,19 +24,26 @@ int main()
 	int quanta = 5;
 	int quanta_1 = 7;
 	int quanta_2 = 3;
+	int quanta_3 = 4;
+	int quanta_4 = 6;
 
 	int mat[ N ]; //vector which contains the energy of each object
 	int maxCycle = 100*N; //maximum number of cycles
 
 	//set all the object's energy to 5 quanta
-	for(int i = 0; i < N; i++)
-		mat[ i ] = quanta;
+	//for(int i = 0; i < N; i++)
+	//	mat[ i ] = quanta;
 
 	//Another energy distribution initial condition
 	/*for(int i = 0; i < N/2; i++)
 		mat[ i ] = quanta_1;
 	for(int i = N/2; i < N; i++)
 		mat[ i ] = quanta_2;*/
+
+	for(int i = 0; i < N/2; i++)
+		mat[ i ] = quanta_3;
+	for(int i = N/2; i < N; i++)
+		mat[ i ] = quanta_4;
 
 	srand( (unsigned) time( 0 ) );
 	
@@ -53,7 +60,7 @@ int main()
 		mat[ object_2 ] -= 1;
 		
 		//check if some object has negative quanta
-		if( ( (mat[ object_1 ] < 0) || (mat[ object_2 ] < 0) ) || ( (mat[ object_2 ] < 0) && (mat[ object_1 ] < 0) ) )
+		if( ( (mat[ object_1 ] < 0) || (mat[ object_2 ] < 0) ) )
 		{
 			accepted++;
 
@@ -99,7 +106,9 @@ int main()
 	}
 
 	cout << "total energy is = " << total_energy << endl;
-	cout << "dicounted steps (in porcentage) = " << 100*(double(accepted)/double(maxCycle)) << "%" << endl;
+	cout << "total number of cycles used = " << maxCycle + accepted << endl;
+	cout << "effective cycles used = " << maxCycle << endl;
+	cout << "discounted steps (in porcentage) = " << 100*(double(accepted)/double(maxCycle + accepted)) << "%" << endl;
 	
 	return 0;
 }
