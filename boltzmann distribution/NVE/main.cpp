@@ -52,8 +52,8 @@ int main()
 	for(int k = 0; k < maxCycle; k++)
 	{
 		//pick up two objects randomly
-		int object_1 = int( N*rand() )/RAND_MAX;
-		int object_2 = int( N*rand() )/RAND_MAX;
+		int object_1 = int( N*rand() )/RAND_MAX - 1;
+		int object_2 = int( N*rand() )/RAND_MAX - 1;
 		
 		//exchange one quanta between them
 		mat[ object_1 ] += 1;
