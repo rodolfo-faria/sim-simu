@@ -21,34 +21,48 @@ int main()
 
 	const int N = 1000; //number of objects
 	const int max_quanta = 35;
-	int quanta = 5;
-	int quanta_1 = 7;
-	int quanta_2 = 3;
-	int quanta_3 = 4;
-	int quanta_4 = 6;
 
 	int mat[ N ]; //vector which contains the energy of each object
 	int maxCycle = 100*N; //maximum number of cycles
 
-	//set all the object's energy to 5 quanta
-	//for(int i = 0; i < N; i++)
-	//	mat[ i ] = quanta;
+	int nDistribution;
 
-	//Another energy distribution initial condition
-	/*for(int i = 0; i < N/2; i++)
-		mat[ i ] = quanta_1;
-	for(int i = N/2; i < N; i++)
-		mat[ i ] = quanta_2;*/
+	cout << "Enter among the three distributions below:" << endl;
+	cout << "1: 100% with 5 quanta;" << endl;
+	cout << "2: 50% with 7 quanta and 50% with 3 quanta;" << endl;
+	cout << "3: 50% with 4 quanta and 50% with 6 quanta." << endl;
 
-	for(int i = 0; i < N/2; i++)
-		mat[ i ] = quanta_3;
-	for(int i = N/2; i < N; i++)
-		mat[ i ] = quanta_4;
+	cin >> nDistribution;
 
+	switch(nDistribution)
+	{
+	case 1:
+		//int quanta = 5;
+		for(int i = 0; i < N; i++)
+		mat[ i ] = 5;
+		break;
+	case 2:
+		for(int i = 0; i < N/2; i++)
+			mat[ i ] = 7;
+		for(int i = N/2; i < N; i++)
+			mat[ i ] = 3;
+		break;
+	case 3:
+		for(int i = 0; i < N/2; i++)
+			mat[ i ] = 4;
+		for(int i = N/2; i < N; i++)
+			mat[ i ] = 6;
+		break;
+	default:
+		cout << "That's not a valid distribution!" << endl;
+	}
+	
+	//seed the rand() function
 	srand( (unsigned) time( 0 ) );
 	
 	//acceptance index
 	int accepted = 0;
+
 	for(int k = 0; k < maxCycle; k++)
 	{
 		//pick up two objects randomly
