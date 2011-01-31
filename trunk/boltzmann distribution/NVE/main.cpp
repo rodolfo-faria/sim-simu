@@ -3,6 +3,7 @@ This code simulates elastic energy changes for a group of at least 1000 objects.
 It uses the Microcanonical Ensemble (NVE)
 */
 
+//Standard libraries
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
@@ -14,7 +15,7 @@ using namespace std;
 
 int main()
 {
-	//Creat output file
+	//Creat output files
 	ofstream file, afile;
 	file.open("histogram.dat");
 	afile.open("convergence.dat");
@@ -34,10 +35,10 @@ int main()
 
 	cin >> nDistribution;
 
+	//Decides which initial distribution 
 	switch(nDistribution)
 	{
 	case 1:
-		//int quanta = 5;
 		for(int i = 0; i < N; i++)
 		mat[ i ] = 5;
 		break;
@@ -49,9 +50,9 @@ int main()
 		break;
 	case 3:
 		for(int i = 0; i < N/2; i++)
-			mat[ i ] = 4;
-		for(int i = N/2; i < N; i++)
 			mat[ i ] = 6;
+		for(int i = N/2; i < N; i++)
+			mat[ i ] = 4;
 		break;
 	default:
 		cout << "That's not a valid distribution!" << endl;
@@ -74,7 +75,7 @@ int main()
 		mat[ object_2 ] -= 1;
 		
 		//check if some object has negative quanta
-		if( ( (mat[ object_1 ] < 0) || (mat[ object_2 ] < 0) ) )
+		if( ( (mat[ object_1 ] <= 0) || (mat[ object_2 ] <= 0) ) )
 		{
 			accepted++;
 
@@ -90,7 +91,7 @@ int main()
 		int count = 0;
 		for(int i = 0; i < N; i++)
 		{
-			if(mat[ i ] == 0)
+			if(mat[ i ] == 1)
 				++count;
 		}
 		afile << k << setw(13) << count << endl;
@@ -105,8 +106,8 @@ int main()
 	file << "Quanta" << setw( 13 ) << "Frequency" << endl;
 
 	//compute the frequency in which each energy appears in the final macrostate till max_quanta
-	double density[ max_quanta ];
-	for(int i = 0; i < max_quanta; i++)
+//	double density[ max_quanta ];
+	for(int i = 1; i <= max_quanta; i++)
 	{
 		int frequency = 0;
 		for(int j = 0; j < N; j++)
@@ -114,9 +115,9 @@ int main()
 				if(mat[ j ] == i)
 					++frequency;
 			}
-		density[ i ] = double(frequency)/double(N);
-		file << i + 1 << setw(13) << frequency << endl;
-		cout << "number of " << i + 1 << " quantas's energy: " << frequency << endl;	
+	//	density[ i ] = double(frequency)/double(N);
+		file << i  << setw(13) << frequency << endl;
+		cout << "number of " << i  << " quantas's energy: " << frequency << endl;	
 	}
 
 	cout << "total energy is = " << total_energy << endl;
